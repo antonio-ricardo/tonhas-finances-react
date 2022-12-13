@@ -54,4 +54,27 @@ export const GlobalStyle = createGlobalStyle`
         opacity: 0.6;
         cursor: not-allowed;
     }
+
+    .newTransactionModalOverlay {
+        background-color: rgba(0,0,0, 0.6);
+
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        align-items: center;
+        justify-content: center;
+        display: flex;
+    }
+
+    .newTransactionModalContent {
+        background-color: var(--shape);
+
+        width: 535px;
+        height: 528px;
+
+        border-radius: 0.25rem;
+    }
 `;

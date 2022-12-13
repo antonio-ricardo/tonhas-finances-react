@@ -43,5 +43,10 @@ export const Container = styled.div`
       background: var(--green);
       color: #fff;
     }
+
+    &.negativeTotal {
+      background: var(--red);
+      color: #fff;
+    }
   }
 `;
