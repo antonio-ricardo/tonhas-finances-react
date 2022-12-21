@@ -5,8 +5,8 @@ export const Container = styled.div`
     display: flex;
     margin-top: 1rem;
     justify-content: center;
-    margin-left: 10rem;
-    margin-right: 10rem;
+    margin-left: 10%;
+    margin-right: 10%;
 
 
     table {

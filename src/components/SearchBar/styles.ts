@@ -5,12 +5,16 @@ export const Container = styled.div`
   justify-content: center;
   gap: 1rem;
 
-  margin-left: 10rem;
-  margin-right: 10rem;
+  margin-left: 10%;
+  margin-right: 10%;
 
   input {
-    width: 90rem;
+    @media (max-width: 870px) {
+      min-width: 23rem;
+    }
 
+    width: 90rem;
+    
     min-width: 27rem;
     padding: 1rem 1rem;
   }

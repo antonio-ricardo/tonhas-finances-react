@@ -1,16 +1,24 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
+  @media (max-width: 990px) {
+    display: flex;
+    flex-direction: column;
+    min-width: 33rem;
+  }
+
+  @media (max-width: 580px) {
+    min-width: 29rem;
+  }
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  justify-content: center;
-
   position: relative;
   top: -4rem;
 
-  margin-left: 10rem;
-  margin-right: 10rem;
+  margin-left: 10%;
+  margin-right: 10%;
 
   div {
     background: var(--shape);
