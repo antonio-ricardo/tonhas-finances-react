@@ -5,6 +5,7 @@ import { PrincipalHeader } from "../components/PrincipalHeader";
 import { NewTransactionModal } from "../components/NewTransactionModal";
 import { TransactionsProvider } from "../hooks/useTransactions";
 import { AuthenticateProvider } from "../hooks/useAuthenticate";
+import { UserProvider } from "../hooks/useUser";
 
 ReactModal.setAppElement('#root')
 
@@ -24,16 +25,24 @@ export function PrincipalScreen() {
   return (
     <>
       <AuthenticateProvider>
-        <TransactionsProvider>
-          <PrincipalHeader onOpenNewTransactionModal={handleOpenNewTransactionModal} />
 
-          <Dashboard />
+        <UserProvider>
 
-          <NewTransactionModal
-            handleCloseNewTransactionModal={handleCloseNewTransactionModal}
-            isNewTransactionModalIsOpen={isNewTransactionModalIsOpen}
-          />
-        </TransactionsProvider>
+          <TransactionsProvider>
+
+            <PrincipalHeader onOpenNewTransactionModal={handleOpenNewTransactionModal} />
+
+            <Dashboard />
+
+            <NewTransactionModal
+              handleCloseNewTransactionModal={handleCloseNewTransactionModal}
+              isNewTransactionModalIsOpen={isNewTransactionModalIsOpen}
+            />
+
+          </TransactionsProvider>
+
+        </UserProvider>
+
       </AuthenticateProvider>
     </>
   );

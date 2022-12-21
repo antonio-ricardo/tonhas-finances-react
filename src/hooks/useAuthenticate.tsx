@@ -9,7 +9,8 @@ interface RefreshTokenResponse {
 }
 
 interface AuthenticateContextData {
-  authenticate: (navigateTo?: string) => Promise<void>;
+  authenticate: (navigateTo?: string) => Promise<void>
+  logOut: () => Promise<void>
 }
 
 interface AuthenticaProviderProps {
@@ -69,8 +70,14 @@ export function AuthenticateProvider({ children }: AuthenticaProviderProps): JSX
     }
   }
 
+  async function logOut() {
+    removeCookies({ cookieNames: ['tonhas-finances:acess-token', 'tonhas-finances:refresh-token'] })
+
+    navigate('/login')
+  }
+
   return (
-    <AuthenticateContext.Provider value={{ authenticate }}>
+    <AuthenticateContext.Provider value={{ authenticate, logOut }}>
       {children}
     </AuthenticateContext.Provider>
   )

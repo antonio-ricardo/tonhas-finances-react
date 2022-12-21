@@ -1,18 +1,22 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 export const Container = styled.header`
   background: var(--blue);
   height: 13.25rem;
 `;
 
-export const Content = styled.div`
+interface ContentProps {
+  hasProfilePhoto: boolean;
+}
+
+export const Content = styled.div<ContentProps>`
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   margin-left: 10%;
   margin-right: 10%;
-  padding-top: 1.5rem;
+  padding-top: ${(props) => props.hasProfilePhoto ? '1.5rem' : '3rem'};
 
   div {
     color: #fff;
@@ -25,18 +29,24 @@ export const Content = styled.div`
     }
   }
 
-  #profileImgDiv {
-    height: 6rem;
-    
-    img {
-      width: 6rem;
+  ${(props) => {
+    if (props.hasProfilePhoto) {
+      return css`
+        #profileImgDiv {
+          height: 6rem;
 
-      border-radius: 4rem;
-      border: 2px solid var(--green);
+          img {
+            width: 6rem;
 
-      animation: appear 1s;
+            border-radius: 4rem;
+            border: 2px solid var(--green);
+
+            animation: appear 2s;
+          }
+        }
+      `;
     }
-  }
+  }}
 
   button {
     font-size: 1rem;
@@ -57,7 +67,6 @@ export const Content = styled.div`
   @keyframes appear {
     from {
       opacity: 0;
-      width: 1rem;
     }
   }
 `;
