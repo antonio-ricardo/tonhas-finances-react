@@ -1,6 +1,9 @@
 import { createContext, FormEvent, ReactNode, useContext, useEffect, useState } from "react"
-import { checkIfNewTransactionModalFieldsIsEmpty } from "../helpers/checkIfNewTransactionModalFieldsIsEmpty"
+import { getNewResponse } from "../helpers/getNewResponse"
+import { validateFormFields } from "../helpers/validateFormFields"
 import { api } from "../services/api"
+import { getCookies } from "../services/cookies"
+import { useAuthenticate } from "./useAuthenticate"
 
 
 type TransactionType = 'DEPOSIT' | 'WITHDRAW' | 'UNMARKED'
@@ -14,14 +17,19 @@ interface Transaction {
     category: string
 }
 
+interface FormFields {
+    value: string
+    title: string
+    category: string
+}
+
 interface CreateNewTransactionInput {
     event: FormEvent
     transactionType: TransactionType
-    handleCloseNewTransactionModal: () => void
 }
 
 interface TransactionContextData {
-    createNewTransaction: ({ event, transactionType, handleCloseNewTransactionModal }: CreateNewTransactionInput) => void
+    createNewTransaction: ({ event, transactionType }: CreateNewTransactionInput) => void
     transactions: Transaction[]
 }
 
@@ -29,32 +37,87 @@ interface TransactionProviderProps {
     children: ReactNode
 }
 
+interface IncomingTransaction {
+    id: number
+    type: TransactionType
+    description: string
+    category: string
+    value: number
+    userEmail: string
+    receiverEmail: string
+    created_at: Date
+    updated_at: Date
+}
+
 const transactionsContext = createContext<TransactionContextData>({} as TransactionContextData)
 
 export function TransactionsProvider({ children }: TransactionProviderProps) {
     const [transactions, setTransactions] = useState<Transaction[]>([])
+    const { authenticate } = useAuthenticate()
 
     useEffect(() => {
-        api.get('/transactions').then((response) => setTransactions(response.data ?? []))
-    }, [])
+        const defineTransactions = async () => {
+            let { data, config } = await api.get('/transactions', {
+                headers: {
+                    authorization: `Bearer ${getCookies("tonhas-finances:acess-token")}`,
+                },
+            })
 
-    function createNewTransaction({ event, transactionType, handleCloseNewTransactionModal }: CreateNewTransactionInput) {
+            if (!data) {
+                return setTransactions([])
+            }
+
+            if (data.message === 'Invalid token') {
+                await authenticate()
+                const newResponse = await getNewResponse(config)
+                data = newResponse.data
+            }
+
+            const parsedTransactions = data ? data.map((transaction: IncomingTransaction) => {
+                return {
+                    id: transaction.id,
+                    type: transaction.type,
+                    value: transaction.value,
+                    title: transaction.description,
+                    date: transaction.created_at,
+                    category: transaction.category,
+                }
+            }) : []
+
+            setTransactions(parsedTransactions)
+        }
+
+        defineTransactions().catch(console.error)
+    }, [authenticate])
+
+    function createNewTransaction({ event, transactionType }: CreateNewTransactionInput) {
         event.preventDefault()
 
-        const formData = new FormData(event.target as HTMLFormElement)
-        const data = Object.fromEntries(formData)
+        const { validatedFields, hasInvalidFields } = validateFormFields<FormFields>(
+            {
+                fieldsName: ['category', 'title', 'value'],
+                inputsClass: 'newTransactionModalFields',
+                fieldsQuantity: 3
+            })
 
-        const hasEmptyField = checkIfNewTransactionModalFieldsIsEmpty(data)
-
-        if (hasEmptyField || transactionType === 'UNMARKED') {
+        if (hasInvalidFields || transactionType === 'UNMARKED' || !validatedFields) {
             return
         }
 
-        const newTransaction = { id: 2, ...data, value: Number(data.value), type: transactionType, date: String(new Date()) } as Transaction
+        const newTransaction = {
+            description: validatedFields.title,
+            category: validatedFields.category,
+            value: Number(validatedFields.value),
+            type: transactionType
+        }
 
-        setTransactions([...transactions, newTransaction])
-
-        handleCloseNewTransactionModal()
+        api.post('/transactions', newTransaction, {
+            headers: {
+                authorization: `Bearer ${getCookies("tonhas-finances:acess-token")}`,
+            },
+        }).then(() => {
+            document.location.reload()
+        })
     }
 
 

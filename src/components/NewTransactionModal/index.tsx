@@ -42,15 +42,15 @@ export function NewTransactionModal({ handleCloseNewTransactionModal, isNewTrans
                     <img src={closeIcon} alt="closeModalImg" onClick={handleCloseNewTransactionModal} />
                 </button>
 
-                <form onSubmit={(event) => createNewTransaction({ event, transactionType, handleCloseNewTransactionModal })}>
+                <form onSubmit={(event) => createNewTransaction({ event, transactionType})}>
 
                     <h1>Nova transação</h1>
 
                     <div id='modalTextInputsContainer'>
 
-                        <input type="text" id='formTitleInput' name="title" placeholder="Descrição" />
-                        <input type="number" id='formValueInput' name="value" placeholder="Preço" />
-                        <input type="text" id='formCategoryInput' name="category" placeholder="Categoria" />
+                        <input type="text" className="newTransactionModalFields" name="title" placeholder="Descrição" />
+                        <input type="number" className="newTransactionModalFields" name="value" placeholder="Preço" />
+                        <input type="text" className="newTransactionModalFields" name="category" placeholder="Categoria" />
 
                     </div>
 
