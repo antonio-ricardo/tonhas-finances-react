@@ -1,74 +1,41 @@
-import { createServer, Model } from 'miragejs';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { App } from './App';
+import { PrincipalScreen } from './pages/PrincipalScreen';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import { LoginScreen } from './pages/LoginScreen';
+import { GlobalStyle } from './styles/global';
+import { AuthenticateProvider } from './hooks/useAuthenticate';
+import { SingUpScreen } from './pages/SingUpScreen';
+
+
+const router = createBrowserRouter([
+  {
+    path: "/login",
+    element:
+      <AuthenticateProvider>
+        <LoginScreen />
+      </AuthenticateProvider>
+  },
+  {
+    path: "/singup",
+    element: <SingUpScreen />
+  },
+  {
+    path: '/dashboard',
+    element: <PrincipalScreen />
+  },
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-createServer({
-
-  models: {
-    transaction: Model,
-  },
-
-  seeds(server) {
-    server.db.loadData({
-      transactions: [{
-        id: 1,
-        title: 'show',
-        value: 123,
-        category: 'show',
-        date: new Date(),
-        type: 'DEPOSIT'
-      }, {
-        id: 2,
-        title: 'show',
-        value: 123,
-        category: 'show',
-        date: new Date(),
-        type: 'DEPOSIT'
-      }, {
-        id: 3,
-        title: 'show',
-        value: 123,
-        category: 'show',
-        date: new Date(),
-        type: 'DEPOSIT'
-      }, {
-        id: 4,
-        title: 'show',
-        value: 123,
-        category: 'show',
-        date: new Date(),
-        type: 'DEPOSIT'
-      }, {
-        id: 5,
-        title: 'show',
-        value: 123,
-        category: 'show',
-        date: new Date(),
-        type: 'DEPOSIT'
-      }
-      ]
-    })
-  },
-
-  routes() {
-    this.namespace = 'api';
-
-    this.get('/transactions', (schema, request) => {
-
-      const transactions = schema.db.transactions
-
-      return transactions.length > 0 ? transactions : null
-    })
-  }
-})
-
 root.render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <RouterProvider router={router} />
+    <GlobalStyle />
+  </React.StrictMode >
 );
