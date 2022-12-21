@@ -64,7 +64,7 @@ export function TransactionsProvider({ children }: TransactionProviderProps) {
             })
 
             if (!data) {
-                return setTransactions([])
+                return
             }
 
             if (data.message === 'Invalid token') {
