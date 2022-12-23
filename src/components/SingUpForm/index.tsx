@@ -59,6 +59,7 @@ export function SingUpForm() {
                 </div>
 
                 <div id='singUpInputsDiv'>
+                    
                     <input className="singUpInput" type="text" name="name" placeholder="Nome *"/>
 
                     <input className="singUpInput" type="text" name="email" placeholder="Email *" />
@@ -69,7 +70,6 @@ export function SingUpForm() {
 
                     <input className="singUpInput" type="text" name="photoUrl" placeholder="Link da foto" />
 
-                    <a href="./">Esqueceu sua senha ?</a>
                 </div>
 
                 <div id='singUpButtonsDiv'>

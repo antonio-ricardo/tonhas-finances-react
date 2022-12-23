@@ -10,7 +10,7 @@ export const Container = styled.div`
   form {
     background: #f8f8ff;
 
-    height: 42rem;
+    height: 39rem;
     width: 32rem;
     padding-left: 2.5rem;
     padding-right: 2.5rem;
