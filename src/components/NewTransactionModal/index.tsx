@@ -42,7 +42,7 @@ export function NewTransactionModal({ handleCloseNewTransactionModal, isNewTrans
                     <img src={closeIcon} alt="closeModalImg" onClick={handleCloseNewTransactionModal} />
                 </button>
 
-                <form onSubmit={(event) => createNewTransaction({ event, transactionType})}>
+                <form onSubmit={async (event) => await createNewTransaction({ event, transactionType})}>
 
                     <h1>Nova transação</h1>
 

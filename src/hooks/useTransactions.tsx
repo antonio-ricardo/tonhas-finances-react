@@ -29,8 +29,9 @@ interface CreateNewTransactionInput {
 }
 
 interface TransactionContextData {
-    createNewTransaction: ({ event, transactionType }: CreateNewTransactionInput) => void
+    createNewTransaction: ({ event, transactionType }: CreateNewTransactionInput) => Promise<void>
     transactions: Transaction[]
+    getTransactionByType: () => any
 }
 
 interface TransactionProviderProps {
@@ -53,6 +54,7 @@ const transactionsContext = createContext<TransactionContextData>({} as Transact
 
 export function TransactionsProvider({ children }: TransactionProviderProps) {
     const [transactions, setTransactions] = useState<Transaction[]>([])
+    const [transactionsIsFilter, setTransactionsIsFilter] = useState<boolean>(false)
     const { authenticate } = useAuthenticate()
 
     useEffect(() => {
@@ -84,13 +86,16 @@ export function TransactionsProvider({ children }: TransactionProviderProps) {
                 }
             }) : []
 
+            if (transactionsIsFilter) {
+                return
+            }
             setTransactions(parsedTransactions)
         }
 
         defineTransactions().catch(console.error)
-    }, [authenticate])
+    }, [authenticate, transactionsIsFilter])
 
-    function createNewTransaction({ event, transactionType }: CreateNewTransactionInput) {
+    async function createNewTransaction({ event, transactionType }: CreateNewTransactionInput) {
         event.preventDefault()
 
         const { validatedFields, hasInvalidFields } = validateFormFields<FormFields>(
@@ -111,18 +116,68 @@ export function TransactionsProvider({ children }: TransactionProviderProps) {
             type: transactionType
         }
 
-        api.post('/transactions', newTransaction, {
+        let { data, config } = await api.post('/transactions', newTransaction, {
             headers: {
                 authorization: `Bearer ${getCookies("tonhas-finances:acess-token")}`,
             },
-        }).then(() => {
-            document.location.reload()
         })
+
+        if (!data) {
+            return document.location.reload()
+        }
+
+        if (data.message === 'Invalid token') {
+            await authenticate()
+            await getNewResponse(config)
+        }
+
+        document.location.reload()
     }
 
+    async function getTransactionByType() {
+        const { hasInvalidFields, validatedFields } = validateFormFields<Record<'transactionType', string>>({ fieldsName: ['transactionType'], fieldsQuantity: 1, inputsClass: 'searchTransactionInput' })
+
+        const validTransactionType = ['ENTRADAS', 'SAIDAS']
+
+        if (hasInvalidFields || !validatedFields || !validTransactionType.includes(validatedFields.transactionType)) {
+            return
+        }
+
+        let { data, config } = await api.get('/transactions', {
+            headers: {
+                types: validatedFields.transactionType === 'ENTRADAS' ? 'DEPOSIT' : 'WITHDRAW',
+                authorization: `Bearer ${getCookies("tonhas-finances:acess-token")}`
+            }
+        })
+
+        if (!data) {
+            return
+        }
+
+        if (data.message === 'Invalid token') {
+            await authenticate()
+            const newResponse = await getNewResponse(config)
+            data = newResponse.data
+        }
+
+        const parsedTransactions = data ? data.map((transaction: IncomingTransaction) => {
+            return {
+                id: transaction.id,
+                type: transaction.type,
+                value: transaction.value,
+                title: transaction.description,
+                date: transaction.created_at,
+                category: transaction.category,
+            }
+        }) : []
+
+        setTransactions(parsedTransactions)
+
+        setTransactionsIsFilter(true)
+    }
 
     return (
-        <transactionsContext.Provider value={{ transactions, createNewTransaction }}>
+        <transactionsContext.Provider value={{ transactions, createNewTransaction, getTransactionByType }}>
             {children}
         </transactionsContext.Provider >
     )
