@@ -19,8 +19,8 @@
 
 # singUp
 
-![image](https://user-images.githubusercontent.com/78707874/209391299-0614e902-07b1-4b2b-8b01-6b5e90404acd.png)
+![image](https://user-images.githubusercontent.com/78707874/209391690-435195a3-82bd-4ea0-89dc-90c26745a2bf.png)
 
 # Modal
 
-![image](https://user-images.githubusercontent.com/78707874/209391352-0fb2d31c-f807-4216-8022-5828ecf9ff85.png)
+![image](https://user-images.githubusercontent.com/78707874/209391522-b0820468-47fc-4aec-ac45-b2ab6283c02a.png)
